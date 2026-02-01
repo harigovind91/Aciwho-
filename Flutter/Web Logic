@@ -1,0 +1,14 @@
+// यूजर प्रोफाइल और बैंक अपडेट करने का फंक्शन
+void updateProfile() {
+  var userData = {
+    "name": nameController.text,
+    "bank_acc": accController.text,
+    "ifsc": ifscController.text,
+    "pan_card": panController.text,
+  };
+  
+  // यह डेटा सीधे आपके एडमिन पैनल के डेटाबेस में जाएगा
+  ApiService.saveProfile(userData).then((response) {
+    print("प्रोफाइल सफलतापूर्वक अपडेट की गई");
+  });
+}
