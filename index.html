@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HAI - Login & Dashboard</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .main-wrapper { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
+        .logo { width: 100px; margin-bottom: 15px; }
+        
+        /* Tab Styling */
+        .tab-container { display: flex; margin-bottom: 20px; background: #eee; border-radius: 8px; padding: 5px; }
+        .tab-btn { flex: 1; padding: 10px; border: none; cursor: pointer; background: transparent; border-radius: 6px; font-weight: bold; transition: 0.3s; }
+        .tab-btn.active { background: white; color: #28a745; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 15px; }
+        .btn-main { width: 100%; padding: 14px; background: #ffa500; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; margin-top: 10px; }
+        .btn-verify { background: #007bff; width: 100%; padding: 12px; color: white; border: none; border-radius: 8px; cursor: pointer; margin-top: 10px; }
+        .btn-logout { background: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; }
+        
+        .card { background: #f9f9f9; padding: 20px; border-radius: 12px; margin-bottom: 20px; text-align: left; border: 1px solid #eee; }
+        .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; }
+        #home-page { display: none; max-width: 450px; }
+    </style>
+</head>
+<body>
+
+    <div id="login-page" class="main-wrapper">
+        <img src="logo.png" alt="Aciwho Logo" class="logo">
+        <h2>स्वागत है - HAI</h2>
+        <p style="color: #666; margin-top: -10px;">Aciwho Welfare Foundation</p>
+
+        <div class="tab-container">
+            <button class="tab-btn active" onclick="switchLogin('email', this)">Email Login</button>
+            <button class="tab-btn" onclick="switchLogin('mobile', this)">Mobile Login</button>
+        </div>
+        
+        <div id="auth-form">
+            <div id="email-input-group">
+                <input type="email" id="userEmail" placeholder="ईमेल आईडी दर्ज करें">
+            </div>
+            
+            <div id="mobile-input-group" style="display:none;">
+                <input type="text" id="userPhone" placeholder="+91 मोबाइल नंबर दर्ज करें">
+            </div>
+            
+            <button class="btn-main" id="otpBtn" onclick="handleOTPRequest()">OTP प्राप्त करें</button>
+            
+            <div id="otp-section" style="display:none; margin-top: 15px;">
+                <input type="text" id="otpValue" placeholder="6-अंकों का OTP डालें">
+                <button class="btn-verify" onclick="handleFinalLogin()">लॉगिन करें</button>
+            </div>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 25px 0;">
+
+        <div class="donation-box">
+            <h3>Direct Donation (UPI)</h3>
+            <input type="number" id="donAmount" value="500">
+            <button class="btn-main" style="background: #28a745;" onclick="openUpiIntent()">Donate Now</button>
+        </div>
+    </div>
+
+    <div id="home-page" class="main-wrapper">
+        <div class="dashboard-header">
+            <h3>HAI डैशबोर्ड</h3>
+            <button onclick="logout()" class="btn-logout">लॉगआउट</button>
+        </div>
+
+        <div class="card">
+            <h4>👤 मेरी प्रोफ़ाइल</h4>
+            <input type="text" id="profileName" placeholder="आपका पूरा नाम">
+            <input type="text" id="profileBio" placeholder="आपके बारे में (Bio)">
+            <button class="btn-main" style="background: #007bff;" onclick="saveProfile()">प्रोफ़ाइल सेव करें</button>
+        </div>
+
+        <div class="card">
+            <h4>🔐 सुरक्षा सेटिंग्स</h4>
+            <input type="password" id="newPass" placeholder="नया पासवर्ड बनाएँ">
+            <button class="btn-verify" onclick="savePassword()">पासवर्ड अपडेट करें</button>
+        </div>
+        
+        <p style="font-size: 12px; color: #999;">HAI (Hari AI) & Aciwho Foundation द्वारा सुरक्षित</p>
+    </div>
+
+    <script>
+        let loginMethod = 'email';
+
+        // टैब स्विच करने का फंक्शन
+        function switchLogin(method, btn) {
+            loginMethod = method;
+            // बटन स्टाइल अपडेट करें
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // इनपुट फील्ड्स बदलें
+            if(method === 'email') {
+                document.getElementById('email-input-group').style.display = 'block';
+                document.getElementById('mobile-input-group').style.display = 'none';
+            } else {
+                document.getElementById('email-input-group').style.display = 'none';
+                document.getElementById('mobile-input-group').style.display = 'block';
+            }
+            // OTP सेक्शन छुपाएं अगर खुला हो
+            document.getElementById('otp-section').style.display = 'none';
+        }
+
+        function handleOTPRequest() {
+            const email = document.getElementById('userEmail').value;
+            const mobile = document.getElementById('userPhone').value;
+            
+            if(loginMethod === 'email' && !email) { alert("ईमेल भरें"); return; }
+            if(loginMethod === 'mobile' && !mobile) { alert("मोबाइल नंबर भरें"); return; }
+
+            document.getElementById('otp-section').style.display = 'block';
+            alert("OTP भेज दिया गया है! (Demo OTP: 123456)");
+        }
+
+        function handleFinalLogin() {
+            const otp = document.getElementById('otpValue').value;
+            if(otp === "123456") {
+                alert("लॉगिन सफल! HAI में स्वागत है।");
+                document.getElementById('login-page').style.display = 'none';
+                document.getElementById('home-page').style.display = 'block';
+            } else {
+                alert("गलत OTP। कृपया 123456 डालें।");
+            }
+        }
+
+        function saveProfile() {
+            alert("प्रोफ़ाइल अपडेट हो गई है!");
+        }
+
+        function savePassword() {
+            alert("पासवर्ड सुरक्षित रूप से सेट हो गया है!");
+        }
+
+        function openUpiIntent() {
+            const amount = document.getElementById('donAmount').value;
+            window.location.href = `upi://pay?pa=YOUR_ID@upi&pn=Aciwho&am=${amount}&cu=INR`;
+        }
+
+        function logout() {
+            location.reload();
+        }
+    </script>
+</body>
+</html>
