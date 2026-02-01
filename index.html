@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aciwho Login & Donation | Safe & Secure</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="main-wrapper">
+        <div class="login-container">
+            <img src="logo.png" alt="Aciwho Logo" class="logo">
+            <h2>स्वागत है - Aciwho Foundation</h2>
+            
+            <div id="auth-form">
+                <input type="email" id="userEmail" placeholder="ईमेल आईडी दर्ज करें" required>
+                <input type="password" id="userPass" placeholder="पासवर्ड बनाएँ" required>
+                <input type="text" id="userPhone" placeholder="+91 मोबाइल नंबर">
+                
+                <button class="btn-main" id="otpBtn" onclick="handleOTPRequest()">OTP प्राप्त करें</button>
+                
+                <div id="otp-section" style="display:none; margin-top: 15px;">
+                    <input type="text" id="otpValue" placeholder="6-अंकों का OTP डालें">
+                    <button class="btn-verify" onclick="handleFinalLogin()">लॉगिन करें</button>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="donation-box">
+            <h3>Aciwho Welfare Foundation</h3>
+            <p>समाज सेवा के लिए सीधा दान करें (UPI)</p>
+            <input type="number" id="donAmount" placeholder="राशि (₹) दर्ज करें" value="500">
+            <button class="btn-main" onclick="openUpiIntent()">Donate Now</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. Login/OTP Logic ---
+        function handleOTPRequest() {
+            const email = document.getElementById('userEmail').value;
+            if(!email) { alert("ईमेल भरें"); return; }
+            document.getElementById('otp-section').style.display = 'block';
+            document.getElementById('otpBtn').innerText = "OTP दोबारा भेजें";
+        }
+
+        function handleFinalLogin() {
+            const otp = document.getElementById('otpValue').value;
+            if(otp.length === 6) {
+                alert("लॉगिन सफल! HAI (Hari AI) में स्वागत है।");
+            } else {
+                alert("सही OTP डालें।");
+            }
+        }
+
+        // --- 2. Direct UPI Intent Logic ---
+        function openUpiIntent() {
+            const amount = document.getElementById('donAmount').value;
+            const upiId = "YOUR_UPI_ID@okicici"; // <--- अपनी UPI ID यहाँ डालें
+            const name = "Aciwho Foundation";
+            const note = "Donation for Welfare";
+
+            if(!amount || amount <= 0) {
+                alert("कृपया वैध राशि दर्ज करें");
+                return;
+            }
+
+            // UPI Deep Link Format
+            // pa = Payee VPA (UPI ID)
+            // pn = Payee Name
+            // am = Amount
+            // cu = Currency
+            // tn = Transaction Note
+            const upiUrl = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
+
+            // मोबाइल पर UPI ऐप्स खोलने की कोशिश करेगा
+            window.location.href = upiUrl;
+
+            // बैकअप: अगर 2 सेकंड में ऐप नहीं खुलता (जैसे डेस्कटॉप पर), तो अलर्ट दिखाएं
+            setTimeout(() => {
+                console.log("If payment didn't open, please use a mobile device.");
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
+
