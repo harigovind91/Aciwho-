@@ -1,0 +1,22 @@
+// पेमेंट को होल्ड पर रखने के लिए (Manual Capture)
+const razorpay = new Razorpay({ key_id: 'YOUR_ID', key_secret: 'YOUR_SECRET' });
+
+// जब यूजर पेमेंट करे
+app.post('/payment-initiated', async (req, res) => {
+    const { payment_id, user_location, user_ip } = req.body;
+
+    // एडमिन (आपको) मेल भेजना लोकेशन के साथ
+    sendEmailToCEO({
+        subject: "नया पेमेंट होल्ड पर है!",
+        body: `राशि: ₹500\nस्थान: ${user_location}\nIP: ${user_ip}\nकृपया पैनल पर जाकर अप्रूव करें।`
+    });
+    
+    res.send("पेमेंट अप्रूवल के लिए पेंडिंग है।");
+});
+
+// आपके द्वारा अप्रूव करने पर पेमेंट बैंक में आएगा
+app.post('/admin/approve-payment', async (req, res) => {
+    const { payment_id } = req.body;
+    await razorpay.payments.capture(payment_id, amount, currency);
+    res.send("पेमेंट सफल! पैसा आपके बैंक में भेज दिया गया है।");
+});
