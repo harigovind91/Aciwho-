@@ -1,0 +1,11 @@
+<form action="/submit-enquiry" method="POST">
+  <input type="text" name="name" placeholder="आपका नाम" required>
+  <input type="email" name="email" placeholder="ईमेल आईडी" required>
+  <select name="subject">
+    <option value="donation">डोनेशन संबंधी सहायता</option>
+    <option value="campaign">कैंपेन शुरू करने में मदद</option>
+    <option value="other">अन्य</option>
+  </select>
+  <textarea name="message" placeholder="आपका संदेश"></textarea>
+  <button type="submit">संदेश भेजें</button>
+</form>
