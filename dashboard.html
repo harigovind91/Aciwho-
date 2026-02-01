@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <title>User Dashboard | Aciwho</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav>
+        <span>Aciwho Foundation - User Panel</span>
+        <button onclick="logout()">Logout</button>
+    </nav>
+    
+    <div class="main-content">
+        <div class="stats-row">
+            <div class="card">कुल जमा राशि: <br><strong>₹15,000</strong></div>
+            <div class="card">सक्रिय कैंपेन: <br><strong>2</strong></div>
+        </div>
+
+        <h3>कैंपेन विड्रॉल (Withdrawal Request)</h3>
+        <form class="withdraw-form">
+            <input type="number" placeholder="राशि (Amount)">
+            <label>कैंसल्ड चेक अपलोड करें:</label>
+            <input type="file" accept="image/*">
+            <button type="button" class="btn-main">सबमिट करें</button>
+        </form>
+    </div>
+</body>
+</html>
