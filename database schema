@@ -1,0 +1,18 @@
+// Campaign Schema
+{
+  campaign_id: "ACI-101",
+  creator_name: "User Name",
+  target_amount: 50000,
+  raised_amount: 15000,
+  status: "Active", // Active or Completed
+  documents: ["hospital_bill.pdf", "cancelled_check.jpg"]
+}
+
+// Transaction Schema
+{
+  transaction_id: "TXN_998877",
+  donor_name: "Rahul Kumar",
+  amount: 1000,
+  pan_number: "ABCDE1234F", // 80G के लिए
+  timestamp: "2026-01-31 22:00:00"
+}
