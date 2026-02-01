@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HAI - Social Funding Platform</title>
+    <style>
+        :root { --primary: #28a745; --secondary: #ffa500; --bg: #f0f2f5; --white: #ffffff; --text: #333; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 0; color: var(--text); }
+        
+        /* Navbar */
+        .navbar { background: var(--white); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .nav-brand { font-size: 24px; font-weight: bold; color: var(--primary); cursor: pointer; }
+        .nav-links button { margin-left: 15px; border: none; background: none; font-weight: 600; cursor: pointer; color: var(--text); }
+
+        /* Container & Grid */
+        .main-container { max-width: 1000px; margin: 20px auto; padding: 0 15px; display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+        @media (max-width: 768px) { .main-container { grid-template-columns: 1fr; } }
+
+        /* Common Card Style */
+        .card { background: var(--white); border-radius: 12px; padding: 15px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+        /* Post/Campaign Card */
+        .campaign-card { border: 1px solid #eee; }
+        .campaign-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .avatar { width: 45px; height: 45px; background: #ddd; border-radius: 50%; }
+        .campaign-body { font-size: 16px; margin-bottom: 15px; }
+        .btn-donate { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; }
+
+        /* Dashboard/Banking */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .stat-box { background: #e9f7ef; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #c3e6cb; }
+        input, select { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 6px; }
+
+        /* Utility */
+        .hidden { display: none; }
+        .active-link { color: var(--primary) !important; border-bottom: 2px solid var(--primary); }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen" style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+        <div class="card" style="width: 350px; text-align: center;">
+            <h2 style="color: var(--primary);">HAI (Hari AI)</h2>
+            <p>लॉगिन / साइन-अप</p>
+            <input type="text" id="loginField" placeholder="मोबाइल या ईमेल">
+            <button class="btn-donate" onclick="showSection('feed')">OTP प्राप्त करें & लॉगिन</button>
+        </div>
+    </div>
+
+    <div id="app-content" class="hidden">
+        <nav class="navbar">
+            <div class="nav-brand" onclick="showSection('feed')">HAI</div>
+            <div class="nav-links">
+                <button id="link-feed" class="active-link" onclick="showSection('feed')">होम (फीड)</button>
+                <button id="link-dash" onclick="showSection('dash')">डैशबोर्ड</button>
+                <button onclick="location.reload()">लॉगआउट</button>
+            </div>
+        </nav>
+
+        <div class="main-container">
+            
+            <div id="section-feed">
+                <div class="card">
+                    <h4>नया कैंपेन शुरू करें</h4>
+                    <textarea id="campaignText" style="width:100%; height:80px; padding:10px; border-radius:8px; border:1px solid #ddd;" placeholder="समाज सेवा के लिए कुछ लिखें..."></textarea>
+                    <button class="btn-donate" style="background: var(--secondary); margin-top: 10px;" onclick="createCampaign()">कैंपेन पोस्ट करें</button>
+                </div>
+
+                <div id="feed-items">
+                    <div class="card campaign-card">
+                        <div class="campaign-header">
+                            <div class="avatar"></div>
+                            <div><strong>Aciwho Foundation</strong><br><small>Verified NGO</small></div>
+                        </div>
+                        <div class="campaign-body">
+                            उत्तर प्रदेश के बाढ़ प्रभावित क्षेत्रों में भोजन सामग्री पहुँचाने के लिए दान की आवश्यकता है।
+                        </div>
+                        <button class="btn-donate" onclick="payNow()">Donate Now</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="section-dash" class="hidden">
+                <div class="card">
+                    <h3>मेरा वॉलेट (Wallet)</h3>
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <small>कुल फंड आया</small>
+                            <h2 id="totalFund">₹0</h2>
+                        </div>
+                        <div class="stat-box">
+                            <small>कुल विड्रॉल</small>
+                            <h2 style="color:red">₹0</h2>
+                        </div>
+                    </div>
+                    <button class="btn-donate" onclick="requestWithdraw()">Withdrawal Request</button>
+                </div>
+
+                <div class="card">
+                    <h3>🏦 बैंक अकाउंट जोड़ें</h3>
+                    <input type="text" placeholder="बैंक का नाम">
+                    <input type="text" placeholder="अकाउंट नंबर">
+                    <input type="text" placeholder="IFSC कोड">
+                    <div id="bank-otp-box" class="hidden">
+                        <input type="text" id="bankOtp" placeholder="6-अंकों का OTP">
+                    </div>
+                    <button class="btn-donate" style="background: #007bff;" onclick="saveBank()">बैंक डिटेल्स सेव करें</button>
+                </div>
+
+                <div class="card">
+                    <h3>मेरे सक्रिय कैंपेन</h3>
+                    <div id="my-campaigns-list" style="font-size: 14px; color: #666;">
+                        अभी कोई कैंपेन नहीं है...
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        let walletBalance = 0;
+
+        // सेक्शन स्विचिंग लॉजिक
+        function showSection(name) {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('app-content').classList.remove('hidden');
+            
+            document.getElementById('section-feed').classList.toggle('hidden', name !== 'feed');
+            document.getElementById('section-dash').classList.toggle('hidden', name !== 'dash');
+            
+            document.getElementById('link-feed').classList.toggle('active-link', name === 'feed');
+            document.getElementById('link-dash').classList.toggle('active-link', name === 'dash');
+        }
+
+        // नया कैंपेन बनाना
+        function createCampaign() {
+            const text = document.getElementById('campaignText').value;
+            if(!text) { alert("कृपया कुछ लिखें"); return; }
+
+            const feed = document.getElementById('feed-items');
+            const newPost = `
+                <div class="card campaign-card">
+                    <div class="campaign-header">
+                        <div class="avatar" style="background:#28a745"></div>
+                        <div><strong>आपका नाम (Self)</strong><br><small>अभी</small></div>
+                    </div>
+                    <div class="campaign-body">${text}</div>
+                    <button class="btn-donate" onclick="payNow()">Donate Now</button>
+                </div>
+            `;
+            feed.insertAdjacentHTML('afterbegin', newPost);
+            
+            // डैशबोर्ड अपडेट
+            document.getElementById('my-campaigns-list').innerHTML = "<li>" + text.substring(0, 30) + "... (Fund: ₹0)</li>";
+            
+            document.getElementById('campaignText').value = "";
+            alert("कैंपेन सफलतापूर्वक लाइव हो गया!");
+        }
+
+        // डोनेशन (Simulated)
+        function payNow() {
+            alert("UPI ऐप्स खुल रहे हैं... भुगतान सफल होने पर फंड आपके वॉलेट में दिखेगा।");
+            // डेमो के लिए बैलेंस बढ़ाना
+            walletBalance += 500;
+            document.getElementById('totalFund').innerText = "₹" + walletBalance;
+        }
+
+        // बैंक सेव करना
+        function saveBank() {
+            const otpBox = document.getElementById('bank-otp-box');
+            if(otpBox.classList.contains('hidden')) {
+                otpBox.classList.remove('hidden');
+                alert("मोबाइल पर OTP भेजा गया है।");
+            } else {
+                alert("बैंक अकाउंट सफलतापूर्वक लिंक हो गया है!");
+            }
+        }
+
+        // विड्रॉल रिक्वेस्ट
+        function requestWithdraw() {
+            if(walletBalance <= 0) {
+                alert("विड्रॉल के लिए पर्याप्त फंड नहीं है।");
+                return;
+            }
+            alert("आपकी विड्रॉल रिक्वेस्ट (₹" + walletBalance + ") एडमिन को भेज दी गई है। 24-48 घंटों में पैसा आपके बैंक में होगा।");
+        }
+    </script>
+</body>
+</html>
