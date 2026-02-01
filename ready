@@ -1,0 +1,14 @@
+// पेमेंट गेटवे को एक्टिवेट करने का ऑटोमेटिक फंक्शन
+const options = {
+  key: "YOUR_RAZORPAY_KEY", // यह 'की' गेटवे से मिलेगी
+  amount: donationAmount * 100, // अमाउंट को पैसों में बदलना
+  currency: "INR", // सिर्फ भारत के लिए फिक्स
+  name: "Aciwho Welfare Foundation",
+  handler: async function (response) {
+     // पेमेंट सफल होते ही यह खुद डेटाबेस अपडेट कर देगा
+     await updateCampaignBalance(campaignId, donationAmount);
+     await generate80GReceipt(userId); 
+     alert("धन्यवाद! आपका दान सुरक्षित प्राप्त हुआ।");
+  }
+};
+
